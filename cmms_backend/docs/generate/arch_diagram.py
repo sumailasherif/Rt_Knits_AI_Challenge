@@ -25,6 +25,7 @@ WHITE  = HexColor("#FFFFFF")
 LGREY  = HexColor("#F2F3F4")
 MGREY  = HexColor("#BDC3C7")
 BLACK  = HexColor("#000000")   # ALL text uses this
+LBLUE  = HexColor("#D6EAF8")   # title bar background
 
 W, H = landscape(A3)
 PAD  = 12 * mm
@@ -129,11 +130,13 @@ def generate():
     c.setFillColor(LGREY)
     c.rect(0, 0, W, H, fill=1, stroke=0)
 
-    # Title bar
-    c.setFillColor(NAVY)
+    # Title bar — light background, black text
+    c.setFillColor(LBLUE)
+    c.setStrokeColor(BLUE)
+    c.setLineWidth(1.5)
     c.rect(0, H-22*mm, W, 22*mm, fill=1, stroke=0)
-    # Title text in WHITE on dark background for readability
-    c.setFillColor(WHITE)
+    c.line(0, H-22*mm, W, H-22*mm)
+    c.setFillColor(BLACK)
     c.setFont("Helvetica-Bold", 16)
     c.drawString(PAD, H-14*mm, "RT Knits Agentic CMMS — System Architecture")
     c.setFont("Helvetica", 9)

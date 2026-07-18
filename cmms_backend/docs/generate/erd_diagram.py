@@ -27,6 +27,7 @@ PURPLE = HexColor("#7D3C98")
 GOLD   = HexColor("#F0B429")
 STEEL  = HexColor("#5D8AA8")
 BLACK  = HexColor("#000000")   # ALL text
+LBLUE  = HexColor("#D6EAF8")   # title bar background
 
 W, H   = landscape(A2)
 COL_W  = 74*mm
@@ -270,10 +271,13 @@ def generate():
     c.setFillColor(LGREY)
     c.rect(0, 0, W, H, fill=1, stroke=0)
 
-    # Title bar
-    c.setFillColor(NAVY)
+    # Title bar — light background, black text
+    c.setFillColor(LBLUE)
+    c.setStrokeColor(BLUE)
+    c.setLineWidth(1.5)
     c.rect(0, H-20*mm, W, 20*mm, fill=1, stroke=0)
-    c.setFillColor(WHITE)
+    c.line(0, H-20*mm, W, H-20*mm)
+    c.setFillColor(BLACK)
     c.setFont("Helvetica-Bold", 15)
     c.drawString(15*mm, H-13*mm, "RT Knits Agentic CMMS — Entity Relationship Diagram")
     c.setFont("Helvetica", 9)

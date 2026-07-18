@@ -140,9 +140,13 @@ def section_band(c, y, label_txt, fill=LBLUE, stroke=BLUE):
 
 
 def title_bar(c, title, subtitle):
-    c.setFillColor(NAVY)
+    # Light blue band — black text on light background for maximum visibility
+    c.setFillColor(LBLUE)
+    c.setStrokeColor(BLUE)
+    c.setLineWidth(1.5)
     c.rect(0, H-22*mm, W, 22*mm, fill=1, stroke=0)
-    c.setFillColor(WHITE)
+    c.line(0, H-22*mm, W, H-22*mm)
+    c.setFillColor(BLACK)
     c.setFont("Helvetica-Bold", 13)
     c.drawCentredString(W/2, H-13*mm, title)
     c.setFont("Helvetica", 8)
@@ -150,9 +154,13 @@ def title_bar(c, title, subtitle):
 
 
 def footer(c, page_num, total):
-    c.setFillColor(NAVY)
+    # Light grey band — black text
+    c.setFillColor(HexColor("#E0E0E0"))
+    c.setStrokeColor(MGREY)
+    c.setLineWidth(0.5)
     c.rect(0, 0, W, 10*mm, fill=1, stroke=0)
-    c.setFillColor(WHITE)
+    c.line(0, 10*mm, W, 10*mm)
+    c.setFillColor(BLACK)
     c.setFont("Helvetica", 7)
     c.drawCentredString(W/2, 3.5*mm, f"RT Knits Agentic CMMS  ·  CBBR-NATEC Innovation Cup 2026  ·  Page {page_num} of {total}")
 
