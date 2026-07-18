@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: rtknits_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: rtknits_cmms
+      POSTGRES_USER: cmms_user
+      POSTGRES_PASSWORD: supersecret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cmms_user -d rtknits_cmms"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── ChromaDB (Knowledge Agent vector store) ────────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: rtknits_chroma
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+
+  # ── FastAPI Backend ────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rtknits_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://cmms_user:supersecret@db:5432/rtknits_cmms
+      DATABASE_URL_SYNC: postgresql://cmms_user:supersecret@db:5432/rtknits_cmms
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data          # seed Excel files
+      - ./logs:/app/logs
+
+  # ── ngrok tunnel (local WhatsApp webhook testing) ──────────────────────────
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: rtknits_ngrok
+    restart: unless-stopped
+    depends_on:
+      - api
+    command: http api:8000
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-""}   # optional: set in .env for persistent URLs
+    ports:
+      - "4040:4040"   # ngrok web UI
+
+volumes:
+  postgres_data:
+  chroma_data:
