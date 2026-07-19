@@ -5,6 +5,7 @@
 ## Diagram 1 — Loop 1: Nightly Batch Planning & Technician Conflict Resolution
 
 ```mermaid
+%%{init: { 'theme': 'base', 'themeVariables': { 'actorTextColor': '#000000', 'noteTextColor': '#000000', 'signalColor': '#000000', 'signalTextColor': '#000000', 'labelTextColor': '#000000', 'loopTextColor': '#000000', 'actorBackground': '#F0F4F8', 'noteBkgColor': '#FFF9E6' } } }%%
 sequenceDiagram
     autonumber
 
@@ -78,6 +79,7 @@ sequenceDiagram
 ## Diagram 2 — Loop 2: Live Triage, Rating Gate, P0 Preemption & Async Escalation
 
 ```mermaid
+%%{init: { 'theme': 'base', 'themeVariables': { 'actorTextColor': '#000000', 'noteTextColor': '#000000', 'signalColor': '#000000', 'signalTextColor': '#000000', 'labelTextColor': '#000000', 'loopTextColor': '#000000', 'actorBackground': '#F0F4F8', 'noteBkgColor': '#FFF9E6' } } }%%
 sequenceDiagram
     autonumber
 
