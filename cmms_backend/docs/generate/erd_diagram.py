@@ -281,7 +281,7 @@ def generate():
     c.setFont("Helvetica-Bold", 15)
     c.drawString(15*mm, H-13*mm, "RT Knits Agentic CMMS — Entity Relationship Diagram")
     c.setFont("Helvetica", 9)
-    c.drawRightString(W-15*mm, H-13*mm, "CBBR-NATEC Innovation Cup 2026  ·  PostgreSQL · 10 Tables · pgvector")
+    c.drawRightString(W-15*mm, H-13*mm, "CBBR-NATEC Innovation Cup 2026  ·  PostgreSQL")
 
     # Relations behind tables
     for ft, tt in RELATIONS:

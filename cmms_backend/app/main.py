@@ -91,7 +91,7 @@ app = FastAPI(
     title="RT Knits Agentic CMMS",
     description=(
         "AI-powered WhatsApp CMMS for RT Knits factory maintenance. "
-        "CBBR-NATEC Innovation Cup 202."
+        "CBBR-NATEC Innovation Cup 2026."
     ),
     version="1.0.0",
     docs_url="/docs",
