@@ -1,5 +1,7 @@
 RT Knits Agentic CMMS
 CBBR-NATEC Innovation Cup — Technical Report
+
+
 1. Executive Summary & The Value Proposition
 Factory maintenance in a textile manufacturing environment like RT Knits runs on a fragile chain of manual handoffs: a machine breaks, a worker has to find a supervisor, the supervisor has to remember to log it somewhere, someone has to figure out which technician is free, and by the time a repair actually starts, production has already bled minutes or hours of downtime. Every step in that chain is a place where information gets lost, delayed, or never recorded at all — which means the data needed to actually improve the maintenance operation never gets captured in the first place.
 RT Knits Agentic CMMS replaces that chain with a single, frictionless entry point: WhatsApp. A factory floor worker sends a text, a voice note, or a photo of the broken equipment — in English, French/Creole, Hindi, or Bengali — and a coordinated swarm of seven specialized AI agents takes it from there. Within seconds, the fault is transcribed or visually analyzed, translated, classified by urgency, matched against historical repair knowledge, assigned to the best-available technician, and tracked end-to-end until the job is confirmed complete and rated.
