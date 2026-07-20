@@ -22,7 +22,7 @@ import uuid
 from typing import Annotated
 
 import structlog
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agents.orchestrator import get_orchestrator
@@ -50,9 +50,9 @@ _MAX_SEEN = 10_000
 
 @router.get("/webhook")
 async def verify_webhook(
-    hub_mode: str | None = None,
-    hub_verify_token: str | None = None,
-    hub_challenge: str | None = None,
+    hub_mode: str | None = Query(None, alias="hub.mode"),
+    hub_verify_token: str | None = Query(None, alias="hub.verify_token"),
+    hub_challenge: str | None = Query(None, alias="hub.challenge"),
 ) -> Response:
     """
     Meta calls this once to verify your webhook URL.
@@ -150,8 +150,9 @@ def _verify_signature(body: bytes, signature_header: str | None) -> None:
         return
     if not signature_header:
         raise HTTPException(status_code=401, detail="Missing signature")
+    app_secret = settings.whatsapp_app_secret or settings.app_secret_key
     expected = "sha256=" + hmac.new(
-        settings.app_secret_key.encode(),
+        app_secret.encode(),
         body,
         hashlib.sha256,
     ).hexdigest()

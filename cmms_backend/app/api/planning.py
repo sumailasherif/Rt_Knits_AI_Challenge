@@ -24,9 +24,13 @@ router = APIRouter(prefix="/planning", tags=["Planning"])
 log = structlog.get_logger(__name__)
 
 
+def _default_plan_date() -> str:
+    return str(date.today())
+
+
 @router.post("/trigger")
 async def trigger_planning(
-    plan_date: str = Query(default=str(date.today()), description="ISO date YYYY-MM-DD"),
+    plan_date: str = Query(default_factory=_default_plan_date, description="ISO date YYYY-MM-DD"),
     force: bool = Query(default=False, description="Re-run even if plans already exist today"),
 ) -> dict:
     """

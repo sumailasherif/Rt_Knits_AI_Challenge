@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import subprocess
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import structlog
 from fastapi import FastAPI
@@ -28,6 +29,7 @@ from app.core.logging import configure_logging
 configure_logging()
 log = structlog.get_logger(__name__)
 settings = get_settings()
+BACKEND_ROOT = Path(__file__).resolve().parent.parent
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -43,7 +45,7 @@ async def lifespan(app: FastAPI):
     try:
         result = subprocess.run(
             ["alembic", "upgrade", "head"],
-            capture_output=True, text=True, cwd="."
+            capture_output=True, text=True, cwd=BACKEND_ROOT
         )
         if result.returncode != 0:
             log.error("migration_failed", stderr=result.stderr)

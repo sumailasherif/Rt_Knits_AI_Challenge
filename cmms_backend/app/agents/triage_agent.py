@@ -33,6 +33,7 @@ settings = get_settings()
 
 # SLA targets in hours
 SLA_MAP = {"P0": 0.5, "P1": 8.0, "P2": 48.0}
+VALID_PRIORITIES = frozenset(SLA_MAP)
 
 # Estimated minutes by priority (fallback if LLM doesn't provide)
 DEFAULT_MINUTES = {"P0": 30, "P1": 90, "P2": 120}
@@ -177,11 +178,15 @@ Validate or adjust the priority and estimate repair time. Respond in JSON."""
             raw = await self._chat(prompt, json_mode=True)
             data = self._parse_json(raw)
             priority = data.get("priority", rule_priority)
+            if priority not in VALID_PRIORITIES:
+                priority = rule_priority
             # Enforce P0 cannot be downgraded
             if rule_priority == "P0" and priority != "P0":
                 priority = "P0"
             required_trade = data.get("required_trade", rule_trade)
-            estimated_minutes = int(data.get("estimated_minutes", DEFAULT_MINUTES[priority]))
+            estimated_minutes = int(
+                data.get("estimated_minutes", DEFAULT_MINUTES[priority])
+            )
             rationale = TriageRationale(
                 rule_matched=data.get("rationale", {}).get("rule_matched", rule_matched),
                 evidence=data.get("rationale", {}).get("evidence", "LLM validation"),

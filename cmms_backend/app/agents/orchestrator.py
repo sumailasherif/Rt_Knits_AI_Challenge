@@ -252,21 +252,48 @@ class OrchestratorGraph:
             output = await self.triage.run(triage_input, knowledge_context=knowledge_ctx)
         except Exception as exc:
             log.error("orchestrator_triage_failed", error=str(exc))
-            return {"error": str(exc)}
+            return {
+                "error": str(exc),
+                "outbound_message": (
+                    "⚠️ Sorry, we couldn't prioritise your request. Please try again in a moment."
+                ),
+                "current_route": "end",
+            }
 
-        # Persist work order to DB
+        intake = state.intake_output
+        fault = intake.fault
+
+        # Persist task request + work order to DB
         async with self._db_factory() as db:
             from datetime import datetime, timedelta, timezone
-            from app.db.models import WorkOrder as WOModel
-            from app.agents.triage_agent import SLA_MAP
+            from sqlalchemy import select
+
+            from app.db.models import TaskRequest, WorkOrder as WOModel
+
+            existing = await db.execute(
+                select(TaskRequest).where(TaskRequest.request_id == intake.request_id)
+            )
+            if existing.scalar_one_or_none() is None:
+                db.add(
+                    TaskRequest(
+                        request_id=intake.request_id,
+                        requester_id=intake.requester_id,
+                        asset_id=fault.asset_id,
+                        raw_text=fault.translated_text or fault.fault_description,
+                        audio_transcription=fault.audio_transcript,
+                        structured_fault=fault.model_dump_json(),
+                        whatsapp_message_id=state.whatsapp_message_id,
+                    )
+                )
 
             sla_due = datetime.now(timezone.utc) + timedelta(hours=output.sla_hours)
             wo = WOModel(
                 wo_id=output.wo_id,
-                request_id=state.intake_output.request_id,
+                request_id=intake.request_id,
+                asset_id=fault.asset_id,
                 priority=output.priority,
                 status="Open",
-                description=state.intake_output.fault.fault_description,
+                description=fault.fault_description,
                 required_trade=output.required_trade,
                 estimated_minutes=output.estimated_minutes,
                 sla_due_at=sla_due,

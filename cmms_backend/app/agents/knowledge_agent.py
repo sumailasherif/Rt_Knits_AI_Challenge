@@ -28,13 +28,19 @@ class KnowledgeAgent(BaseAgent):
 
     def __init__(self) -> None:
         super().__init__()
-        self._chroma = chromadb.HttpClient(
-            host=settings.chroma_host, port=settings.chroma_port
-        )
-        self._collection = self._chroma.get_or_create_collection(
-            name=settings.chroma_collection,
-            metadata={"hnsw:space": "cosine"},
-        )
+        self._collection = None
+
+    def _get_collection(self):
+        """Connect to ChromaDB on first use so the app can start without it."""
+        if self._collection is None:
+            chroma = chromadb.HttpClient(
+                host=settings.chroma_host, port=settings.chroma_port
+            )
+            self._collection = chroma.get_or_create_collection(
+                name=settings.chroma_collection,
+                metadata={"hnsw:space": "cosine"},
+            )
+        return self._collection
 
     @property
     def system_prompt(self) -> str:
@@ -60,7 +66,7 @@ Keep summaries under 3 bullet points. Be factual and technical."""
             where = {"asset_id": inp.asset_id}
 
         try:
-            results = self._collection.query(
+            results = self._get_collection().query(
                 query_embeddings=[query_vector],
                 n_results=inp.top_k,
                 where=where if where else None,

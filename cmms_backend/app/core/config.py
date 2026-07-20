@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     whatsapp_verify_token: str = Field(..., description="Webhook verify token")
     whatsapp_access_token: str = Field(..., description="Meta permanent access token")
     whatsapp_phone_number_id: str = Field(..., description="Sender phone number ID")
+    whatsapp_app_secret: str = Field(
+        default="",
+        description="Meta App Secret for webhook HMAC validation (production)",
+    )
     whatsapp_api_version: str = "v19.0"
     whatsapp_api_base: str = "https://graph.facebook.com"
 

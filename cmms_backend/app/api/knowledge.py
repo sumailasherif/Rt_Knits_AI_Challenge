@@ -22,13 +22,20 @@ from app.schemas.knowledge_doc import KnowledgeDocCreate, KnowledgeDocRead
 router = APIRouter(prefix="/knowledge", tags=["Knowledge"])
 log = structlog.get_logger(__name__)
 
-_knowledge = KnowledgeAgent()
+_knowledge: KnowledgeAgent | None = None
+
+
+def _get_knowledge_agent() -> KnowledgeAgent:
+    global _knowledge
+    if _knowledge is None:
+        _knowledge = KnowledgeAgent()
+    return _knowledge
 
 
 @router.post("/search", response_model=KnowledgeOutput)
 async def search_knowledge(payload: KnowledgeInput) -> KnowledgeOutput:
     """Semantic search over the knowledge base."""
-    return await _knowledge.run(payload)
+    return await _get_knowledge_agent().run(payload)
 
 
 @router.post("/docs", response_model=KnowledgeDocRead, status_code=status.HTTP_201_CREATED)
@@ -58,7 +65,7 @@ async def ingest_document(
     chroma_id = str(uuid.uuid4())
 
     # Upsert into ChromaDB
-    _knowledge._collection.upsert(
+    _get_knowledge_agent()._get_collection().upsert(
         ids=[chroma_id],
         embeddings=[vector],
         documents=[payload.raw_content],
