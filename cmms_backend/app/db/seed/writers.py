@@ -10,17 +10,13 @@ on large datasets.
 from typing import Any
 
 import structlog
-from sqlalchemy import delete, text
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import (
     Asset,
-    Assignment,
-    DailyPlan,
     Department,
-    Feedback,
-    KnowledgeDoc,
     Requester,
     TaskRequest,
     Technician,

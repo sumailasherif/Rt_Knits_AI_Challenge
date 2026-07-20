@@ -10,9 +10,11 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 # ── Pull the sync DSN from environment (overrides alembic.ini) ──────────────
-from dotenv import load_dotenv
-
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed; rely on env vars being set externally
 
 # ── Import Base with all models registered ───────────────────────────────────
 from app.db.base import Base  # noqa: E402

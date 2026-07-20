@@ -22,6 +22,7 @@ from app.schemas.knowledge_doc import KnowledgeDocCreate, KnowledgeDocRead
 router = APIRouter(prefix="/knowledge", tags=["Knowledge"])
 log = structlog.get_logger(__name__)
 
+# Lazy singleton — not created at import time so app starts even if ChromaDB is down
 _knowledge: KnowledgeAgent | None = None
 
 

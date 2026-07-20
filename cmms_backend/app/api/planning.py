@@ -30,13 +30,15 @@ def _default_plan_date() -> str:
 
 @router.post("/trigger")
 async def trigger_planning(
-    plan_date: str = Query(default_factory=_default_plan_date, description="ISO date YYYY-MM-DD"),
+    plan_date: str = Query(default=None, description="ISO date YYYY-MM-DD"),
     force: bool = Query(default=False, description="Re-run even if plans already exist today"),
 ) -> dict:
     """
     Manually trigger the nightly planning loop.
     Useful for testing and supervisor overrides.
     """
+    if plan_date is None:
+        plan_date = str(date.today())
     log.info("planning_manual_trigger", plan_date=plan_date, force=force)
     result = await trigger_planning_now(plan_date=plan_date, force=force)
     return {"status": "ok", "result": result}

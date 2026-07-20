@@ -14,6 +14,7 @@ Shutdown sequence:
 from __future__ import annotations
 
 import subprocess
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -29,6 +30,9 @@ from app.core.logging import configure_logging
 configure_logging()
 log = structlog.get_logger(__name__)
 settings = get_settings()
+
+# FIX: resolve the cmms_backend/ root (parent of app/) so alembic can locate
+# alembic.ini regardless of where uvicorn is launched from.
 BACKEND_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -41,14 +45,16 @@ async def lifespan(app: FastAPI):
     """Startup → yield → shutdown."""
 
     # ── 1. Run DB migrations ──────────────────────────────────────────────────
-    log.info("startup_running_migrations")
+    log.info("startup_running_migrations", cwd=str(BACKEND_ROOT))
     try:
         result = subprocess.run(
-            ["alembic", "upgrade", "head"],
-            capture_output=True, text=True, cwd=BACKEND_ROOT
+            [sys.executable, "-m", "alembic", "upgrade", "head"],
+            capture_output=True,
+            text=True,
+            cwd=str(BACKEND_ROOT),   # FIX: always the cmms_backend/ directory
         )
         if result.returncode != 0:
-            log.error("migration_failed", stderr=result.stderr)
+            log.error("migration_failed", stderr=result.stderr.strip())
         else:
             log.info("migrations_applied", stdout=result.stdout.strip())
     except Exception as exc:
